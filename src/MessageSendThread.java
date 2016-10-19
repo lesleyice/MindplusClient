@@ -55,7 +55,8 @@ public class MessageSendThread implements Runnable {
 
 			System.out.print("[" + state.getRoomId() + "] " + state.getIdentity() + "> ");
 			try {
-				MessageSend(socket, msg);
+				
+				MessageSend(socket, msg);				
 			} catch (IOException e) {
 				System.out.println("Communication Error: " + e.getMessage());
 				System.exit(1);
@@ -91,6 +92,7 @@ public class MessageSendThread implements Runnable {
 				send(sendToServer);
 				mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
 				mainGUI.tbm.setRowCount(0);
+		
 			}
 			else if(array[0].startsWith("#quit")) {
 				sendToServer = ClientMessages.getQuitRequest();
@@ -99,8 +101,9 @@ public class MessageSendThread implements Runnable {
 			else if(array[0].startsWith("#who")) {
 				sendToServer = ClientMessages.getWhoRequest();
 				send(sendToServer);
-				mainGUI.memberlist.setRowCount(0);
-				mainGUI.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
+				Client.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
+				Client.memberlist.setRowCount(0);
+				
 			}
 			else {
 				System.out.println("Invalid command!");

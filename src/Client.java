@@ -69,14 +69,14 @@ public class Client {
     JFrame createRoom;
     SSLSocket socket = null;
 	String identity = null;
-	String password = null;
+	static String password = null;
 	static boolean debug = false;
 	static int port;
 	static String hostname;
 	static String path;
 	ClientFrame clientf;
-	public static DefaultTableModel tbm;
-	public static DefaultTableModel memberlist;
+	public  static DefaultTableModel tbm;
+	public static  DefaultTableModel memberlist;
 	String chatroomname;
 	String createchatroom;
 	
@@ -174,10 +174,10 @@ public class Client {
 public void startSocket(){
 		
 	// You can hardcode the values of the JVM variables as follows:
-	System.setProperty("javax.net.ssl.trustStore",
-			"C:\\Users\\BingLesleyYuan\\Google Drive\\2016 semester 2\\distributed system\\assignment 2\\key.cer");
+	//System.setProperty("javax.net.ssl.trustStore",
+			//"C:\\Users\\BingLesleyYuan\\Google Drive\\2016 semester 2\\distributed system\\assignment 2\\key.cer");
 	// System.setProperty("javax.net.ssl.trustStorePassword", "123456");
-	// System.setProperty("javax.net.debug", "all");
+	 //System.setProperty("javax.net.debug", "all");
 				
 				// Create SSL socket factory, which creates SSLSocket instances
 	 			SSLSocketFactory factory= (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -186,7 +186,7 @@ public void startSocket(){
 	
 				socket =(SSLSocket) factory.createSocket(hostname, port);
 
-			State state = new State(identity, "");
+			State state = new State(identity, "",password);
 			
 			// start sending thread
 			MessageSendThread messageSendThread = new MessageSendThread(socket, state, debug,mainGUI);
@@ -231,7 +231,7 @@ public void startSocket(){
 	    }
 	    
 	    public void msgDisplay(String msg){
-	    	clientf.jtaChat.append(clientf.sdf.format(new Date())+"\n"+msg+"\n\n");
+	    	clientf.jtaChat.append(clientf.sdf.format(new Date())+"\n"+msg+"\n");
 	    }
 	    
 	    public void listDisplay(String[] chatroomName){
@@ -396,18 +396,38 @@ public void startSocket(){
 
 					@Override
 					public void keyPressed(KeyEvent e) {
+						
+						int code=e.getKeyCode();
+						int mod=e.getModifiers();
+						
 						  if(e.getKeyCode() == KeyEvent.VK_ENTER){
 							  MessageSendThread.messageQueue.add(jtaSay.getText());
 							  jtaSay.setText(null);
-							 // jtaSay.setCaretPosition(jtaSay.getDocument().getLength()-1);
+							  
+							  if(jtaSay.getDocument().getLength()>0){
+							  
+							  jtaSay.setCaretPosition(jtaSay.getDocument().getLength()-1);}
+							  
+							  /*try{
+									
+										jtaSay.setCaretPosition(jtaSay.getDocument().getLength()-1);
+									
+								}
+								catch(Exception e1){}*/
 					        }
 					}
 
 					@Override
 					public void keyReleased(KeyEvent e) {
-						if(e.getKeyCode() == KeyEvent.VK_ENTER){
-						 jtaSay.setCaretPosition(jtaSay.getDocument().getLength()-1);
-						 }
+						
+							if(e.getKeyCode() == KeyEvent.VK_ENTER){
+								jtaSay.setText(null);
+								 
+								  if(jtaSay.getDocument().getLength()>0){
+								  
+								  jtaSay.setCaretPosition(jtaSay.getDocument().getLength()-1);}
+							}
+						
 					}
 
 					@Override
@@ -508,7 +528,7 @@ public void startSocket(){
 	        			int row =availableChatrooms.rowAtPoint(e.getPoint());
 	        		  
 	        		   chatroomname=(String)availableChatrooms.getValueAt(row,0);
-	        		    System.out.println("YAHAYAHAYAH"+chatroomname);
+	        		  
 	        		  
 	        		}
 

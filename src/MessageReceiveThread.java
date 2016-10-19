@@ -1,3 +1,4 @@
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -58,6 +60,7 @@ public class MessageReceiveThread implements Runnable {
 					System.out.print("[" + state.getRoomId() + "] " + state.getIdentity() + "> ");
 				}
 				MessageReceive(socket, message);
+				
 			}
 			System.exit(0);
 			in.close();
@@ -94,13 +97,7 @@ public class MessageReceiveThread implements Runnable {
 		String listmsg = "#"+messages.getListRequest().get("type").toString();
 		String whomsg ="#"+ messages.getWhoRequest().get("type").toString();
 ////////////////////////////////////////////////////////////////////////////
-		try {
-			 this.listtimer = new Heartbeat(hostnames, ports, interval, listmsg);
-			 this.whotimer = new Heartbeat(hostnames, ports, interval, whomsg);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
 
 		// server reply of #newidentity
 		if (type.equals("newidentity")) {
@@ -153,7 +150,8 @@ public class MessageReceiveThread implements Runnable {
 				switchServer(temp_socket, temp_in);
 				System.out.println(state.getIdentity() + " switches to server " + serverid);
 				System.out.print("[" + state.getRoomId() + "] " + state.getIdentity() + "> ");
-				//MessageSendThread.messageQueue.add("#list");
+				/*MessageSendThread.messageQueue.add("#list");
+				MessageSendThread.messageQueue.add("#who");*/
 				if (state.getRoomId().equals(null)){
 				messageToGUI="[" + state.getRoomId() + "] " + state.getIdentity() + "> "+state.getIdentity() + " switches to server " + serverid;
 				}else{
@@ -176,17 +174,8 @@ public class MessageReceiveThread implements Runnable {
 				System.exit(1);
 			}
 ///////////////////////////////////////////////////////////////////////////////////////
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				
-				e.printStackTrace();
-			}
-			this.listtimer = new Heartbeat(hostnames, ports, interval, listmsg);
-			this.whotimer = new Heartbeat(hostnames, ports, interval, whomsg);
-			listtimer.run();
-			whotimer.run();
-			//mainGUI.msgDisplay(messageToGUI);
+
+			
 			return;
 ////////////////////////////////////////////////////////////////////////////////////////			
 			
@@ -213,7 +202,7 @@ public class MessageReceiveThread implements Runnable {
 
 		// server sends roomchange
 		if (type.equals("roomchange")) {
-
+			
 			// identify whether the user has quit!
 			if (message.get("roomid").equals("")) {
 				// quit initiated by the current client
@@ -255,24 +244,35 @@ public class MessageReceiveThread implements Runnable {
 				messageToGUI="[" + state.getRoomId() + "] " + state.getIdentity() + "> "+message.get("identity") + " moves from " + message.get("former") + " to "
 						+ message.get("roomid");
 			}
+			this.listtimer = new Heartbeat(hostnames, ports, interval, listmsg,this.messageSendThread.messageQueue);
+			this.whotimer = new Heartbeat(hostnames, ports, interval, whomsg,this.messageSendThread.messageQueue);
+			mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
+			mainGUI.tbm.setRowCount(0);
+			Client.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
+			Client.memberlist.setRowCount(0);
+			listtimer.run();
+			whotimer.run();
 			mainGUI.msgDisplay(messageToGUI);
+		
 			return;
 		}
 
 		// server reply of #who
 		if (type.equals("roomcontents")) {
 			JSONArray array = (JSONArray) message.get("identities");
-			System.out.print(message.get("roomid") + " contains");
-			String[] memberNamelist=new String[1];
+			System.out.print(message.get("roomid") + " contains ");
+			String [] memberNamelist= new String[1];
 			
 			for (int i = 0; i < array.size(); i++) {
-				System.out.print(" " + array.get(i));
+				System.out.print( array.get(i)+" ");
 				memberNamelist[0]=(String) array.get(i);
-				if (message.get("owner").equals(array.get(i))) {
+				
+				if (message.get("owner").equals(array.get(i))){
 					System.out.print("*");
 					memberNamelist[0]=memberNamelist[0]+"*";
 				}
 				mainGUI.memeberlistDisplay(memberNamelist);
+//				System.out.println(memberNamelist);
 			}
 			System.out.println();
 			System.out.print("[" + state.getRoomId() + "] " + state.getIdentity() + "> ");
@@ -329,9 +329,9 @@ public class MessageReceiveThread implements Runnable {
 		if(type.equals("maintenance")){
 			
 			String themessage="The server is under maintenance";
-        	JOptionPane.showMessageDialog(new JFrame(), message, "Error",
+        	JOptionPane.showMessageDialog(new JFrame(), themessage, "Error",
         	        JOptionPane.ERROR_MESSAGE);
-        	System.out.println(message);
+        	System.out.println(themessage);
 			
 			
 		}
@@ -395,8 +395,12 @@ public class MessageReceiveThread implements Runnable {
 				
 			}
 ///////////////////////////////////////////////////////////////////////////////////			
-			this.listtimer= new Heartbeat(host, port, interval, listmsg);
-			this.whotimer = new Heartbeat(host, port, interval, whomsg);
+			this.listtimer= new Heartbeat(host, port, interval, listmsg,this.messageSendThread.messageQueue);
+			this.whotimer = new Heartbeat(host, port, interval, whomsg,this.messageSendThread.messageQueue);
+			mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
+			mainGUI.tbm.setRowCount(0);
+			Client.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
+			Client.memberlist.setRowCount(0);
 			this.listtimer.run();
 			this.whotimer.run();
 ///////////////////////////////////////////////////////////////////////////////////			

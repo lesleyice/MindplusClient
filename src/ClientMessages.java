@@ -83,7 +83,8 @@ public class ClientMessages {
 			RSAPublicKey key = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(publicSpec);
 			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, key);
-			byte[] rsaEed = cipher.doFinal("123456".getBytes());
+			String pass=Client.password;
+			byte[] rsaEed = cipher.doFinal(pass.getBytes());
 			ret = new String(Base64.getEncoder().encode(rsaEed));
 		} catch (Exception e) {
 			e.printStackTrace();

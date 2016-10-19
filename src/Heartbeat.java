@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -16,14 +17,16 @@ public class Heartbeat {
 	private TimerTask beatTask;
 	private String host;
 	private int port;
+	private BlockingQueue<String> messageQueue;
 
-	public Heartbeat(String host, int port, int interval, String msg) throws UnsupportedEncodingException, IOException {
+	public Heartbeat(String host, int port, int interval, String msg,BlockingQueue<String> messageQueue) throws UnsupportedEncodingException, IOException {
 		this.interval = interval;
 		this.timer = new Timer();
 		this.msg = msg;
 		this.beatTask = getTimerTask();
 		this.host = host;
 		this.port = port;
+		this.messageQueue = messageQueue;
 	}
 
 	public void run() {
