@@ -244,16 +244,17 @@ public class MessageReceiveThread implements Runnable {
 				messageToGUI="[" + state.getRoomId() + "] " + state.getIdentity() + "> "+message.get("identity") + " moves from " + message.get("former") + " to "
 						+ message.get("roomid");
 			}
-			this.listtimer = new Heartbeat(hostnames, ports, interval, listmsg,this.messageSendThread.messageQueue);
-			this.whotimer = new Heartbeat(hostnames, ports, interval, whomsg,this.messageSendThread.messageQueue);
+/*			this.listtimer = new Heartbeat(hostnames, ports, interval, listmsg,this.messageSendThread.messageQueue);
+			this.whotimer = new Heartbeat(hostnames, ports, interval, whomsg,this.messageSendThread.messageQueue);*/
 			mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
 			mainGUI.tbm.setRowCount(0);
-			Client.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
-			Client.memberlist.setRowCount(0);
-			listtimer.run();
-			whotimer.run();
+			mainGUI.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
+			mainGUI.memberlist.setRowCount(0);
+		/*	listtimer.run();
+			whotimer.run();*/
 			mainGUI.msgDisplay(messageToGUI);
-		
+			MessageSendThread.messageQueue.add("#list");
+			MessageSendThread.messageQueue.add("#who");
 			return;
 		}
 
@@ -338,8 +339,8 @@ public class MessageReceiveThread implements Runnable {
 		// server directs the client to another server
 		if (type.equals("route")) {
 //////////////////////////////////////////////////			
-			this.listtimer.cancel();
-			this.whotimer.cancel();
+			/*this.listtimer.cancel();
+			this.whotimer.cancel();*/
 ////////////////////////////////////////////////////////			
 			String temp_room = (String) message.get("roomid");
 			String host = (String) message.get("host");
@@ -395,15 +396,17 @@ public class MessageReceiveThread implements Runnable {
 				
 			}
 ///////////////////////////////////////////////////////////////////////////////////			
-			this.listtimer= new Heartbeat(host, port, interval, listmsg,this.messageSendThread.messageQueue);
-			this.whotimer = new Heartbeat(host, port, interval, whomsg,this.messageSendThread.messageQueue);
-			mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
+/*			this.listtimer= new Heartbeat(host, port, interval, listmsg,this.messageSendThread.messageQueue);
+			this.whotimer = new Heartbeat(host, port, interval, whomsg,this.messageSendThread.messageQueue);*/
+    		mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
 			mainGUI.tbm.setRowCount(0);
-			Client.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
-			Client.memberlist.setRowCount(0);
-			this.listtimer.run();
-			this.whotimer.run();
-///////////////////////////////////////////////////////////////////////////////////			
+			mainGUI.memberlist= (DefaultTableModel) mainGUI.clientf.availableMembers.getModel();
+			mainGUI.memberlist.setRowCount(0);
+		/*	this.listtimer.run();
+			this.whotimer.run();*/
+///////////////////////////////////////////////////////////////////////////////////	
+			MessageSendThread.messageQueue.add("#list");
+			MessageSendThread.messageQueue.add("#who");
 			mainGUI.msgDisplay(messageToGUI);
 			return;
 		}
