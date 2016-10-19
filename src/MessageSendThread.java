@@ -31,7 +31,7 @@ public class MessageSendThread implements Runnable {
 		this.state = state;
 		out = new DataOutputStream(socket.getOutputStream());
 		this.debug = debug;
-		this.messageQueue=new LinkedBlockingQueue<String>();
+		MessageSendThread.messageQueue=new LinkedBlockingQueue<String>();
 		this.mainGUI=mainGUI;
 	}
 
@@ -90,8 +90,8 @@ public class MessageSendThread implements Runnable {
 			if(array[0].startsWith("#list")) {
 				sendToServer = ClientMessages.getListRequest();
 				send(sendToServer);
-				mainGUI.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
-				mainGUI.tbm.setRowCount(0);
+				Client.tbm= (DefaultTableModel) mainGUI.clientf.availableChatrooms.getModel();
+				Client.tbm.setRowCount(0);
 		
 			}
 			else if(array[0].startsWith("#quit")) {

@@ -1,14 +1,8 @@
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -16,7 +10,6 @@ import org.json.simple.parser.ParseException;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,7 +21,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -45,8 +37,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class Client {
@@ -80,7 +74,7 @@ public class Client {
 	String chatroomname;
 	String createchatroom;
 	
-	public static void main(String[] args) throws IOException, ParseException {
+public static void main(String[] args) throws IOException, ParseException {
 		
 	
 		 SwingUtilities.invokeLater(new Runnable() {
@@ -200,7 +194,15 @@ public void startSocket(){
 		} catch (UnknownHostException e) {
 			System.out.println("Unknown host");
 		} catch (IOException e) {
+			
+			// 小夏在这里啊 哈哈哈哈哈哈哈
+			String themessage="The server is down";
+        	JOptionPane.showMessageDialog(new JFrame(), themessage, "Error",
+        	        JOptionPane.ERROR_MESSAGE);
+        	System.out.println(themessage);
 			System.out.println("Communication Error: " + e.getMessage());
+			
+			
 		}
 	}
 	
@@ -221,7 +223,11 @@ public void startSocket(){
 	        clientf.setVisible(true);
 
 	        clientf.addWindowListener(new WindowAdapter() {
-	        	  public void windowClosing(WindowEvent we) {
+	        	  @Override
+				public void windowClosing(WindowEvent we) {
+	        		  
+	        		  
+	        		// quit 1  
 	        		MessageSendThread.messageQueue.add("#quit");
 	        	  }
 	        	});
@@ -250,7 +256,8 @@ public void startSocket(){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	    class enterServerButtonListener implements ActionListener {
-	        public void actionPerformed(ActionEvent event) {
+	        @Override
+			public void actionPerformed(ActionEvent event) {
 	        	identity = usernameChooser.getText();
 	            password=passwordField.getText();
 
@@ -376,19 +383,19 @@ public void startSocket(){
 	            jtaChat.setEditable(false);  
 	            jtaChat.setFont(new Font("Arial", Font.BOLD, 16));  
  
-	            chatJScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  
-	            chatJScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);  
+	            chatJScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);  
+	            chatJScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);  
 	            chatJScroll.setBounds(20, 20, 420, 400);  
 	            this.add(chatJScroll);  
 	          
-	            roomJscroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  
-	            roomJscroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);  
+	            roomJscroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);  
+	            roomJscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);  
 	            roomJscroll.setBounds(480, 20, 160, 200);  
 	            this.add(roomJscroll);  
 	            
 	            
-	            memberJscroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  
-	            memberJscroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);  
+	            memberJscroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);  
+	            memberJscroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);  
 	            memberJscroll.setBounds(480, 220, 160, 200);  
 	            this.add(memberJscroll); 
 	            
@@ -482,6 +489,7 @@ public void startSocket(){
 	                                            {  
 	                                                try  
 	                                                {  
+	                                                	//quit 2
 	                                                	MessageSendThread.messageQueue.add("#quit");
 	                                                    System.exit(0);  
 	                                                }  
@@ -493,7 +501,8 @@ public void startSocket(){
 	            btnFresh.addActionListener(
 	            								new ActionListener(){
 	            									
-	            									public void actionPerformed(ActionEvent event)
+	            									@Override
+													public void actionPerformed(ActionEvent event)
 	            									{
 	            										MessageSendThread.messageQueue.add("#list");
 	            										tbm= (DefaultTableModel) clientf.availableChatrooms.getModel();
@@ -511,12 +520,14 @@ public void startSocket(){
 	            	
 	            availableChatrooms.addMouseListener(new  MouseAdapter (){
 	            	
-	            	public void mousePressed(MouseEvent e) {
+	            	@Override
+					public void mousePressed(MouseEvent e) {
 	        			if (e.isPopupTrigger())
 	        				doPop(e);
 	        		}
 
-	        		public void mouseReleased(MouseEvent e) {
+	        		@Override
+					public void mouseReleased(MouseEvent e) {
 	        			if (e.isPopupTrigger())
 	        				doPop(e);
 	        		}
@@ -558,6 +569,7 @@ public void startSocket(){
 			
 			
 			createRoom.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					
 					createroomPop();
@@ -565,6 +577,7 @@ public void startSocket(){
 			});
 
 			deleteRoom.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					MessageSendThread.messageQueue.add("#deleteroom"+" "+chatroomname);
 
@@ -572,6 +585,7 @@ public void startSocket(){
 			});
 			
 			joinRoom.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					MessageSendThread.messageQueue.add("#joinroom"+" "+chatroomname);
 
@@ -587,7 +601,7 @@ public void startSocket(){
 	     
         createRoom = new JFrame(appName);
 
-        createRoom.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        createRoom.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         
         int w = Toolkit.getDefaultToolkit().getScreenSize().width;  
          
@@ -631,7 +645,8 @@ public void startSocket(){
     }
 	
 	class enterCreateButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent event) {
+        @Override
+		public void actionPerformed(ActionEvent event) {
         	createchatroom= chatnameChooser.getText();
            
 
